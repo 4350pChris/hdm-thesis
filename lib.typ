@@ -104,12 +104,6 @@
   )
   set page(numbering: none)
   set heading(numbering: none, outlined: false)
-  if acronyms != none {
-    acronyms = register-glossary(acronyms)
-  }
-  if glossary != none {
-    glossary = register-glossary(glossary)
-  }
 
   titlepage(metadata, logo, date)
 
@@ -147,19 +141,21 @@
   counter(page).update(1)
   pagebreak(weak: true)
 
-  // Acronyms
-  if acronyms != none and acronyms.len() > 0 {
-    heading(resources.Acronyms)
-    print-glossary(acronyms)
+  let handle_glossary(title, content) = {
+    if (content == none or content.len() == 0) {
+      return
+    }
+    register-glossary(content)
+    heading(title)
+    print-glossary(content)
     pagebreak(weak: true)
   }
 
+  // Acronyms
+  handle_glossary(resources.Acronyms, acronyms)
+
   // Glossary
-  if glossary != none and glossary.len() > 0 {
-    heading(resources.Glossary)
-    print-glossary(glossary)
-    pagebreak(weak: true)
-  }
+  handle_glossary(resources.Glossary, glossary)
 
   // Figures
   outline(title: resources.Figures, target: figure.where(kind: image))
